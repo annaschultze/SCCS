@@ -115,3 +115,4 @@ standardsccs <- function(formula, indiv, astart, aend, aevent, adrug, aedrug, ex
   summary <- summary(mod)
   return(summary)
 }
+
