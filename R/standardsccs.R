@@ -98,6 +98,26 @@ standardsccs <- function(formula, indiv, astart, aend, aevent, adrug, aedrug, ex
   
   qq <- all.vars(as.formula(formula))[-c(which(all.vars(as.formula(formula))=="age"), which(all.vars(as.formula(formula))=="season"), which(all.vars(as.formula(formula))=="event"))]
   
+  # all.vars adds user entered reference levels to qq, causing an error when subsetting below
+  # need to remove these from qq
+  
+  # turn formula into a string character to be able to scrape out the ref levels
+  string_formula <- deparse1(formula)
+  
+  # identify all text following "ref = " and before a closing bracket
+  reg_expression_reflevels <- "ref\\s*=\\s*([^)]+)"
+  matching_reflevels <- gregexpr(reg_expression_reflevels, string_formula)
+  reflevels_long <- regmatches(string_formula, matching_reflevels)[[1]]
+  
+  # remove "ref = " from the result
+  reg_expression_reflevel_start <- "ref\\s*= "
+  reflevels <- gsub(reg_expression_reflevel_start, "", reflevels_long)
+  
+  # tidy up the qq string 
+  qq <- qq[! qq %in% reflevels]
+  
+  # qq now contains varnames only 
+  
   if (length(qq)==0) {
     cov <- cbind()
   }   else {
